@@ -18,5 +18,6 @@ def getInput():
 def visualize(result):
   padLen = len(str(len(result)))
 
-  for (index, processor) in enumerate(result):
-    print(str(index).rjust(padLen, ' ') + ': ' + '=' * sum(processor))
+  for (index, queue) in enumerate(result):
+    tasks = ' '.join(['=' * x for x in queue])
+    print(str(index).rjust(padLen, ' ') + ': ' + tasks)
