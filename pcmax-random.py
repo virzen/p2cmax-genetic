@@ -11,10 +11,7 @@ def main():
     processor = randint(0, processorsCount - 1)
     result[processor].append(process)
 
-  print('processors: ' + str(processorsCount))
-  print('processes: ' + str(processesTimes))
-  print(result)
-  print(visualize(result))
+  visualize(result)
 
 if __name__ == "__main__":
   main()
