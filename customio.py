@@ -15,9 +15,22 @@ def getInput():
   return (processorsCount, processesCount, processesTimes)
 
 
-def visualize(result):
+def visualizeLines(result):
   padLen = len(str(len(result)))
 
   for (index, queue) in enumerate(result):
     tasks = ' '.join(['=' * x for x in queue])
     print(str(index).rjust(padLen, ' ') + ': ' + tasks)
+
+def visualizeNumbers(result):
+  padLen = len(str(len(result)))
+
+  for (index, queue) in enumerate(result):
+    print(str(index).rjust(padLen, ' ') + ': ' + str(sum(queue)))
+
+def visualize(result):
+  maxQueueLen = max([sum(queue) for queue in result])
+  if maxQueueLen <= 80:
+    visualizeLines(result)
+  else:
+    visualizeNumbers(result)
