@@ -3,6 +3,7 @@ from random import randint
 from customio import getInput, visualize
 from utils import create2dArray
 
+
 def main():
   (processorsCount, processesCount, processesTimes) = getInput()
   result = create2dArray(processorsCount)
@@ -12,6 +13,7 @@ def main():
     result[processor].append(process)
 
   visualize(result)
+
 
 if __name__ == "__main__":
   main()
