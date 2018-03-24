@@ -12,3 +12,10 @@ def getInput():
     processesCount = numbers[1]
     processesTimes = numbers[2:]
     return (processorsCount, processesCount, processesTimes)
+
+
+def visualize(result):
+  padLen = len(str(len(result)))
+
+  for (index, processor) in enumerate(result):
+    print(str(index).rjust(padLen, ' ') + ': ' + '=' * sum(processor))
