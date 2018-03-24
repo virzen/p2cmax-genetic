@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 from random import randint
 from customio import getInput, visualize
-
-def create2dArray(size):
-  return [[] for _ in range(size)]
+from utils import create2dArray
 
 def main():
   (processorsCount, processesCount, processesTimes) = getInput()
