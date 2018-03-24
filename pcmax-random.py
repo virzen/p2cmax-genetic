@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from random import randint
-from customio import getInput
+from customio import getInput, visualize
 
 def create2dArray(size):
   return [[] for _ in range(size)]
@@ -16,6 +16,7 @@ def main():
   print('processors: ' + str(processorsCount))
   print('processes: ' + str(processesTimes))
   print(result)
+  print(visualize(result))
 
 if __name__ == "__main__":
   main()
