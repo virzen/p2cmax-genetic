@@ -3,6 +3,7 @@ from random import shuffle
 from customio import getInput
 from customio import visualize
 from pcmax_random import pcmaxRandom
+from math import ceil, inf
 
 # START
 # Generate the initial population
@@ -25,8 +26,13 @@ from pcmax_random import pcmaxRandom
 
 GUARD_VALUE = -1
 POPULATION_SIZE = 10
+SELECTION_RATE = 0.2
 CROSSOVER_PROBABILITY = 0
 MUTATION_PROBABILITY = 0
+
+
+def get_genotype_chunks(processes, genotype):
+  return [genotype[i:i + len(processes)] for i in range(0, len(genotype), len(processes))]
 
 
 def encode(original_processes, individual):
@@ -50,7 +56,7 @@ def encode(original_processes, individual):
 
 def decode(processes, genotype):
   individual = []
-  genotype_chunks = [genotype[i:i + len(processes)] for i in range(0, len(genotype), len(processes))]
+  genotype_chunks = get_genotype_chunks(processes, genotype)
 
   for chunk in genotype_chunks:
     processor = [processes[index] for (index, process) in enumerate(chunk) if process == 1]
