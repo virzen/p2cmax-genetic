@@ -65,14 +65,35 @@ def decode(processes, genotype):
   return individual
 
 
-# lower is better
-def fitness(individual):
-  return max([sum(times) for times in individual])
+# valid genotype contains exactly all processes, each occuring just once
+# basically, it's an array of 1s
+def is_valid_genotype(processes, genotype):
+  chunks = get_genotype_chunks(processes, genotype)
+  sums = [0] * len(processes)
+
+  for chunk in chunks:
+    for (index, num) in enumerate(chunk):
+      sums[index] += num
+
+  for sum in sums:
+    if sum != 1:
+      return False
+
+  return True
 
 
-def selection(population):
-  # TODO
-  return population[0:3]
+def fittness(processes, genotype):
+  if not is_valid_genotype(processes, genotype):
+    return -1 * inf
+
+  individual = decode(processes, genotype)
+  return -1 * max([sum(processor) for processor in individual])
+
+
+def selection(processes, population):
+  sorted_by_fittest = sorted(population, key=lambda genotype: fittness(processes, genotype))
+  quantity = ceil(POPULATION_SIZE * SELECTION_RATE)
+  return sorted_by_fittest[-1 * quantity:]
 
 
 def crossover(individual1, individual2):
@@ -86,16 +107,18 @@ def mutation(individual):
 
 
 def main():
-  (processorsCount, processesCount, processesTimes) = getInput()
+  (processorsCount, processesCount, processes) = getInput()
 
   initial_population = []
   for i in range(POPULATION_SIZE):
-    initial_population.append(pcmaxRandom(processesCount, processesTimes))
+    individual = pcmaxRandom(processesCount, processes)
+    initial_population.append(individual)
 
-  genotypes = [encode(processesTimes, individual) for individual in initial_population]
+  generation = [encode(processes, individual) for individual in initial_population]
 
-  visualize(initial_population[0])
-  print(genotypes[0])
+  # for i in range(10):
+  fittest = selection(processes, generation)
+
 
 
 if __name__ == '__main__':
