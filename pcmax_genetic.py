@@ -48,16 +48,20 @@ def crossover(individual_a, individual_b):
 
 # swap at most 2 processes between 2 random processors
 def mutation(individual):
-  [src_processor_index, dest_processor_index] = shuffle(list(range(len(individual))))[:2]
-
-  assert len(indices) == 2, "Dlugosc indexow byla rowna " + str(len(indices))
+  indices = list(range(len(individual)))
+  shuffle(indices)
+  [src_processor_index, dest_processor_index] = indices[:2]
 
   if len(individual[src_processor_index]) < 1:
     return
 
-  process = src_processor_index[0]
-  individual[src_processor_index].remove(process)
-  individual[dest_processor_index].append(process)
+  src_processor = individual[src_processor_index]
+  dest_processor = individual[dest_processor_index]
+
+
+  process = src_processor[0]
+  src_processor.remove(process)
+  dest_processor.append(process)
 
 
 
