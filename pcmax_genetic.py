@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from random import shuffle
+from random import shuffle, random, randint
 from customio import getInput
 from customio import visualize
 from pcmax_random import pcmaxRandom
@@ -31,94 +31,56 @@ CROSSOVER_PROBABILITY = 0
 MUTATION_PROBABILITY = 0
 
 
-def get_genotype_chunks(processes, genotype):
-  return [genotype[i:i + len(processes)] for i in range(0, len(genotype), len(processes))]
-
-
-def encode(original_processes, individual):
-  processes = list(original_processes)
-  genotype = []
-
-  # O(n * m) >:(
-  for processor in individual:
-    bit_array = [0] * len(processes)
-
-    for process in processor:
-      if process in processes:
-        index = processes.index(process)
-        bit_array[index] = 1
-        processes[index] = -1
-
-    genotype += bit_array
-
-  return genotype
-
-
-def decode(processes, genotype):
-  individual = []
-  genotype_chunks = get_genotype_chunks(processes, genotype)
-
-  for chunk in genotype_chunks:
-    processor = [processes[index] for (index, process) in enumerate(chunk) if process == 1]
-    individual.append(processor)
-
-  return individual
-
-
-# valid genotype contains exactly all processes, each occuring just once
-# basically, it's an array of 1s
-def is_valid_genotype(processes, genotype):
-  chunks = get_genotype_chunks(processes, genotype)
-  sums = [0] * len(processes)
-
-  for chunk in chunks:
-    for (index, num) in enumerate(chunk):
-      sums[index] += num
-
-  for sum in sums:
-    if sum != 1:
-      return False
-
-  return True
-
-
-def fittness(processes, genotype):
-  if not is_valid_genotype(processes, genotype):
-    return -1 * inf
-
-  individual = decode(processes, genotype)
+def fittness(individual):
   return -1 * max([sum(processor) for processor in individual])
 
 
-def selection(processes, population):
-  sorted_by_fittest = sorted(population, key=lambda genotype: fittness(processes, genotype))
+def selection(population):
+  sorted_by_fittest = sorted(population, key=lambda chromosome: fittness(chromosome))
   quantity = ceil(POPULATION_SIZE * SELECTION_RATE)
   return sorted_by_fittest[-1 * quantity:]
 
 
-def crossover(individual1, individual2):
+def crossover(individual_a, individual_b):
   # TODO
-  return (individual1, individual2)
+  return
 
 
+# swap at most 2 processes between 2 random processors
 def mutation(individual):
-  # TODO
-  return individual
+  [src_processor_index, dest_processor_index] = shuffle(list(range(len(individual))))[:2]
+
+  assert len(indices) == 2, "Dlugosc indexow byla rowna " + str(len(indices))
+
+  if len(individual[src_processor_index]) < 1:
+    return
+
+  process = src_processor_index[0]
+  individual[src_processor_index].remove(process)
+  individual[dest_processor_index].append(process)
+
+
+
+def setup(processesCount, processes):
+  initial_population = []
+
+  for i in range(POPULATION_SIZE):
+    individual = pcmaxRandom(processesCount, processes)
+    initial_population.append(individual)
+
+  return initial_population
+
+
+def loop(initial_population):
+  return
+
 
 
 def main():
   (processorsCount, processesCount, processes) = getInput()
 
-  initial_population = []
-  for i in range(POPULATION_SIZE):
-    individual = pcmaxRandom(processesCount, processes)
-    initial_population.append(individual)
-
-  generation = [encode(processes, individual) for individual in initial_population]
-
-  # for i in range(10):
-  fittest = selection(processes, generation)
-
+  initial_population = setup(processesCount, processes)
+  loop(initial_population)
 
 
 if __name__ == '__main__':
