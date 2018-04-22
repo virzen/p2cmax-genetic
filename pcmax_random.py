@@ -17,7 +17,7 @@ def pcmaxRandom(processorsCount, processesTimes):
 
 def main():
   (processorsCount, processesCount, processesTimes) = getInput()
-  result = pcmaxRandom(processesCount, processesTimes)
+  result = pcmaxRandom(processorsCount, processesTimes)
   visualize(result)
 
 
