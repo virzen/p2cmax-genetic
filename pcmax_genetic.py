@@ -32,7 +32,12 @@ NO_PROGRESS_BAILOUT_COUNT = 10000
 
 
 def fittness(individual):
-  return -1 * max([sum(processor) for processor in individual])
+  max = 0
+  for processor in individual:
+    time = sum(processor)
+    if time > max:
+      max = time
+  return -1 * max
 
 
 def cloning(individual):
