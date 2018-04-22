@@ -35,12 +35,6 @@ def fittness(individual):
   return -1 * max([sum(processor) for processor in individual])
 
 
-def selection(population):
-  sorted_by_fittest = sorted(population, key=lambda chromosome: fittness(chromosome))
-  quantity = ceil(POPULATION_SIZE * SELECTION_RATE)
-  return sorted_by_fittest[-1 * quantity:]
-
-
 def cloning(individual):
   return [list(processor) for processor in individual]
 
