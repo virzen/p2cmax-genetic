@@ -25,9 +25,8 @@ from math import ceil, inf
 
 
 GUARD_VALUE = -1
-POPULATION_SIZE = 10
-SELECTION_RATE = 0.2
-MUTATION_PROBABILITY = 0.04
+POPULATION_SIZE = 20
+MUTATION_PROBABILITY = 0.2
 NO_PROGRESS_BAILOUT_COUNT = 10000
 
 
@@ -70,23 +69,24 @@ def setup(processesCount, processes):
   return initial_population
 
 
-def loop(initial_population):
+def loop(initial_population, generate_random_individual):
   population = initial_population
   best = inf
   no_progress_counter = 0
   generation_counter = 0
 
   while no_progress_counter < NO_PROGRESS_BAILOUT_COUNT:
+    fittest_individual = max(population, key=fittness)
+    clone = cloning(fittest_individual)
+
+    population = [fittest_individual, clone]
+
     for individual in population:
       if random() <= MUTATION_PROBABILITY:
         mutation(individual)
 
-    fittest_individual = max(population, key=fittness)
-
-    # "crossover" (heredity, anyway)
-    least_fit_individual = min(population, key=fittness)
-    least_fit_index = population.index(least_fit_individual)
-    population[least_fit_index] = cloning(fittest_individual)
+    for i in range(POPULATION_SIZE - len(population)):
+      population.append(generate_random_individual())
 
     current_best = abs(fittness(fittest_individual))
     if current_best < best:
@@ -98,11 +98,17 @@ def loop(initial_population):
 
     generation_counter += 1
 
+
+def make_pcmaxrandom_generator(processorsCount, processes):
+  return lambda : pcmaxRandom(processorsCount, processes)
+
+
 def main():
   (processorsCount, processesCount, processes) = getInput()
 
   initial_population = setup(processorsCount, processes)
-  loop(initial_population)
+  generate_random_individual = make_pcmaxrandom_generator(processorsCount, processes)
+  loop(initial_population, generate_random_individual)
 
 
 if __name__ == '__main__':
