@@ -6,6 +6,15 @@ from pcmax_random import pcmaxRandom
 from math import ceil, inf
 from utils import create2dArray
 
+from os import environ
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
+POPULATION_SIZE = int(environ.get('POPULATION_SIZE'))
+MUTATION_PROBABILITY = float(environ.get('MUTATION_PROBABILITY'))
+SELECTION_QUANTITY = int(environ.get('SELECTION_QUANTITY'))
+NO_PROGRESS_BAILOUT_COUNT = int(environ.get('NO_PROGRESS_BAILOUT_COUNT'))
+
 # START
 # Generate the initial population
 # Compute fitness
@@ -26,12 +35,6 @@ from utils import create2dArray
 #   [3]
 # ]
 # genotype = [0, 1, 0, 2]
-
-
-POPULATION_SIZE = 100
-MUTATION_PROBABILITY = 0.2
-SELECTION_QUANTITY = 2
-NO_PROGRESS_BAILOUT_COUNT = 2000
 
 
 def encode(processes, individual):
