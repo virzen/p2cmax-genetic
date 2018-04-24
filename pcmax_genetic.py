@@ -4,6 +4,7 @@ from customio import getInput
 from customio import visualize
 from pcmax_random import pcmaxRandom
 from math import ceil, inf
+from utils import create2dArray
 
 # START
 # Generate the initial population
@@ -18,19 +19,46 @@ from math import ceil, inf
 
 
 # Data structure:
+# processes = [1, 2, 4, 3]
 # individual = [
-#   [processTime1, processTime2], <-- processor0 queue
-#   [processTime3, processTime4]  <-- processor1 queue
+#   [1, 4], <-- processor0 queue
+#   [2],    <-- processor1 queue
+#   [3]
 # ]
+# genotype = [0, 1, 0, 2]
 
 
-GUARD_VALUE = -1
-POPULATION_SIZE = 20
+POPULATION_SIZE = 100
 MUTATION_PROBABILITY = 0.2
-NO_PROGRESS_BAILOUT_COUNT = 10000
+SELECTION_QUANTITY = 2
+NO_PROGRESS_BAILOUT_COUNT = 2000
 
 
-def fittness(individual):
+def encode(processes, individual):
+  genotype = []
+
+  for process in processes:
+    for processor_index, processor in enumerate(individual):
+      if process in processor:
+        genotype.append(processor_index)
+        process_index = processor.index(process)
+        processor[process_index] = -1
+        break
+
+  return genotype
+
+
+def decode(processes, processorsCount, genotype):
+  processors = create2dArray(processorsCount)
+
+  for process_index, processor_index in enumerate(genotype):
+    processors[processor_index].append(processes[process_index])
+
+  return processors
+
+
+def fittness(processes, processorsCount, genotype):
+  individual = decode(processes, processorsCount, genotype)
   max = 0
   for processor in individual:
     time = sum(processor)
@@ -39,64 +67,72 @@ def fittness(individual):
   return -1 * max
 
 
-def cloning(individual):
-  return [list(processor) for processor in individual]
+def selection(processes, processorsCount, population):
+  by_fittest = sorted(population, key=lambda genotype: fittness(processes, processorsCount, genotype), reverse=True)
+  return by_fittest[:SELECTION_QUANTITY]
 
 
-def mutation(individual):
-  indices = list(range(len(individual)))
-  shuffle(indices)
-  [src_processor_index, dest_processor_index] = indices[:2]
+def crossover(genotype_a, genotype_b):
+  length = len(genotype_a)
+  half_length = round(length)
+  first_child = genotype_a[:half_length] + genotype_b[half_length:]
+  second_child = genotype_a[half_length:] + genotype_b[:half_length]
 
-  if len(individual[src_processor_index]) < 1:
-    return
-
-  src_processor = individual[src_processor_index]
-  dest_processor = individual[dest_processor_index]
-
-  process = src_processor[0]
-  src_processor.remove(process)
-  dest_processor.append(process)
+  return (first_child, second_child)
 
 
-def setup(processesCount, processes):
+def mutation(processorsCount, population):
+  for genotype in population:
+    if random() < MUTATION_PROBABILITY:
+      index = randint(0, len(genotype) - 1)
+      new_processor_index = randint(0, processorsCount - 1)
+      genotype[index] = new_processor_index
+
+
+def setup(processorsCount, processes):
   initial_population = []
 
   for i in range(POPULATION_SIZE):
-    individual = pcmaxRandom(processesCount, processes)
-    initial_population.append(individual)
+    individual = pcmaxRandom(processorsCount, processes)
+    genotype = encode(processes, individual)
+    initial_population.append(genotype)
 
   return initial_population
 
 
-def loop(initial_population, generate_random_individual):
+def loop(initial_population, generate_random_individual, processes, processorsCount):
   population = initial_population
   best = inf
   no_progress_counter = 0
   generation_counter = 0
 
   while no_progress_counter < NO_PROGRESS_BAILOUT_COUNT:
-    fittest_individual = max(population, key=fittness)
-    clone = cloning(fittest_individual)
+    # selection
+    fittest_individuals = selection(processes, processorsCount, population)
 
-    population = [fittest_individual, clone]
+    # crossover
+    first_child, second_child = crossover(fittest_individuals[0], fittest_individuals[1])
 
-    for individual in population:
-      if random() <= MUTATION_PROBABILITY:
-        mutation(individual)
+    population = fittest_individuals + [first_child, second_child]
 
+    # mutation
+    mutation(processorsCount, population)
+
+    # new individuals
     for i in range(POPULATION_SIZE - len(population)):
-      population.append(generate_random_individual())
+      population.append(encode(processes, generate_random_individual()))
 
-    current_best = abs(fittness(fittest_individual))
+    current_best = abs(fittness(processes, processorsCount, fittest_individuals[0]))
     if current_best < best:
       best = current_best
+      print(best)
       no_progress_counter = 0
-      print('G ' + str(generation_counter) + ': ' + str(best))
     else:
       no_progress_counter += 1
 
     generation_counter += 1
+
+  print(best)
 
 
 def make_pcmaxrandom_generator(processorsCount, processes):
@@ -108,7 +144,7 @@ def main():
 
   initial_population = setup(processorsCount, processes)
   generate_random_individual = make_pcmaxrandom_generator(processorsCount, processes)
-  loop(initial_population, generate_random_individual)
+  loop(initial_population, generate_random_individual, processes, processorsCount)
 
 
 if __name__ == '__main__':
