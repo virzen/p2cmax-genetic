@@ -116,7 +116,13 @@ def loop(initial_population, generate_random_individual, processes, processorsCo
     # crossover
     first_child, second_child = crossover(fittest_individuals[0], fittest_individuals[1])
 
-    population = fittest_individuals + [first_child, second_child]
+    least_fit = min(population, key=lambda genotype: fittness(processes, processorsCount, genotype))
+    least_fit_index = population.index(least_fit)
+    population[least_fit_index] = first_child
+
+    second_least_fit = min(population, key=lambda genotype: fittness(processes, processorsCount, genotype))
+    second_least_fit_index = population.index(second_least_fit)
+    population[second_least_fit_index] = second_child
 
     # mutation
     mutation(processorsCount, population)
