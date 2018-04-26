@@ -19,6 +19,6 @@ Then, run them like a shell script
 
 *.txt files are instances. You can also generate your own with 
 ```
-./pcmax-generate <number>
+./pcmax-generate.py <number>
 ```
 where `<number>` is the number of processors.
