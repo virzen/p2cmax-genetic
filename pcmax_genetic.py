@@ -12,7 +12,6 @@ load_dotenv(find_dotenv())
 
 POPULATION_SIZE = int(environ.get('POPULATION_SIZE'))
 MUTATION_PROBABILITY = float(environ.get('MUTATION_PROBABILITY'))
-SELECTION_QUANTITY = int(environ.get('SELECTION_QUANTITY'))
 NO_PROGRESS_BAILOUT_COUNT = int(environ.get('NO_PROGRESS_BAILOUT_COUNT'))
 
 # START
@@ -73,7 +72,7 @@ def fittness(processes, processorsCount, genotype):
 def selection(processes, processorsCount, population):
     by_fittest = sorted(population, key=lambda genotype: fittness(
         processes, processorsCount, genotype), reverse=True)
-    return by_fittest[:SELECTION_QUANTITY]
+    return by_fittest[:2]
 
 
 def crossover(genotype_a, genotype_b):
