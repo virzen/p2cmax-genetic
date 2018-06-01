@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from sys import argv
 from random import shuffle, random, randint
 from customio import getInput
 from customio import visualize
@@ -13,6 +14,9 @@ load_dotenv(find_dotenv())
 POPULATION_SIZE = int(environ.get('POPULATION_SIZE'))
 MUTATION_PROBABILITY = float(environ.get('MUTATION_PROBABILITY'))
 NO_PROGRESS_BAILOUT_COUNT = int(environ.get('NO_PROGRESS_BAILOUT_COUNT'))
+
+should_be_verbose = '--verbose' in argv or '-v' in argv
+should_display_chart = '--chart' in argv or '-c' in argv
 
 # START
 # Generate the initial population
@@ -105,7 +109,8 @@ def setup(processorsCount, processes):
 
 def loop(initial_population, generate_random_individual, processes, processorsCount):
     population = initial_population
-    best = inf
+    best_fittness = inf
+    best_genotype = None
     no_progress_counter = 0
     generation_counter = 0
 
@@ -132,16 +137,23 @@ def loop(initial_population, generate_random_individual, processes, processorsCo
 
         current_best = abs(
             fittness(processes, processorsCount, fittest_individuals[0]))
-        if current_best < best:
-            best = current_best
-            print(best)
+        if current_best < best_fittness:
+            best_fittness = current_best
+            best_genotype = fittest_individuals[0]
             no_progress_counter = 0
+            if should_be_verbose:
+                print(best_fittness)
         else:
             no_progress_counter += 1
 
         generation_counter += 1
 
-    print(best)
+    if not should_be_verbose:
+        print(best_fittness)
+
+    if should_display_chart:
+        final_individual = decode(processes, processorsCount, best_genotype)
+        visualize(final_individual)
 
 
 def make_pcmaxrandom_generator(processorsCount, processes):
