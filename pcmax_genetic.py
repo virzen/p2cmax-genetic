@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv
 from random import shuffle, random, randint
-from customio import getInput
+from customio import getInput, getParams
 from customio import visualize
 from pcmax_random import pcmaxRandom
 from math import ceil, inf
@@ -14,9 +14,6 @@ load_dotenv(find_dotenv())
 POPULATION_SIZE = int(environ.get('POPULATION_SIZE'))
 MUTATION_PROBABILITY = float(environ.get('MUTATION_PROBABILITY'))
 NO_PROGRESS_BAILOUT_COUNT = int(environ.get('NO_PROGRESS_BAILOUT_COUNT'))
-
-should_be_verbose = '--verbose' in argv or '-v' in argv
-should_display_chart = '--chart' in argv or '-c' in argv
 
 # START
 # Generate the initial population
@@ -113,6 +110,7 @@ def loop(initial_population, generate_random_individual, processes, processorsCo
     best_genotype = None
     no_progress_counter = 0
     generation_counter = 0
+    should_be_verbose, should_display_chart = getParams()
 
     while no_progress_counter < NO_PROGRESS_BAILOUT_COUNT:
         # selection
