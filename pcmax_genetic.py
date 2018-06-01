@@ -127,10 +127,6 @@ def loop(initial_population, generate_random_individual, processes, processorsCo
     # mutation
     mutation(processorsCount, population)
 
-    # new individuals
-    for i in range(POPULATION_SIZE - len(population)):
-      population.append(encode(processes, generate_random_individual()))
-
     current_best = abs(fittness(processes, processorsCount, fittest_individuals[0]))
     if current_best < best:
       best = current_best
